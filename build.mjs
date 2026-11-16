@@ -10,6 +10,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import matter from 'gray-matter';
 import { marked } from 'marked';
+import { pinyin } from 'pinyin-pro';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const DIR = {
@@ -30,6 +31,29 @@ function readJSON(p) {
   return JSON.parse(fs.readFileSync(p, 'utf8'));
 }
 
+/* ---------- 文件名 -> 网址 slug ----------
+   后台用标题当文件名时会生成中文文件名（如「为什么索引必须有序.md」），
+   这里统一转成拼音，保证网址始终是 ASCII：
+     为什么索引必须有序.md  ->  wei-shen-me-suo-yin-bi-xu-you-xu.html
+   也可以在文章开头写 slug: my-url 强制指定。                          */
+function toSlug(source, fallbackDate) {
+  const raw = String(source || '').trim();
+  if (!raw) return `post-${fallbackDate || 'untitled'}`;
+
+  const text = /[\u4e00-\u9fa5]/.test(raw)
+    ? pinyin(raw, { toneType: 'none', type: 'array', nonZh: 'consecutive' }).join(' ')
+    : raw;
+
+  const s = text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 60)
+    .replace(/-+$/g, '');
+
+  return s || `post-${fallbackDate || 'untitled'}`;
+}
+
 /* ---------- 清空 dist ---------- */
 fs.rmSync(DIR.dist, { recursive: true, force: true });
 fs.mkdirSync(path.join(DIR.dist, 'assets'), { recursive: true });
@@ -39,16 +63,23 @@ const site = readJSON(path.join(DIR.content, 'site.json'));
 
 /* ---------- 读取文章 ---------- */
 const posts = [];
+const usedSlugs = new Set();
 for (const file of fs.readdirSync(DIR.posts)) {
   if (!file.endsWith('.md')) continue;
   const raw = fs.readFileSync(path.join(DIR.posts, file), 'utf8');
   const { data, content } = matter(raw);
   if (data.draft === true) continue;
 
-  const slug = file.replace(/\.md$/, '');
   const date = data.date instanceof Date
     ? data.date.toISOString().slice(0, 10)
     : String(data.date || '').slice(0, 10);
+  const dateKey = date.replace(/-/g, '') || 'untitled';
+
+  /* slug 优先取 frontmatter.slug，其次文件名；重复时自动加序号 */
+  const baseSlug = toSlug(data.slug || file.replace(/\.md$/, ''), dateKey);
+  let slug = baseSlug;
+  for (let n = 2; usedSlugs.has(slug); n += 1) slug = `${baseSlug}-${n}`;
+  usedSlugs.add(slug);
 
   let html = marked.parse(content, { gfm: true, breaks: false });
 
