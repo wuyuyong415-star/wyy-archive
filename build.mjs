@@ -83,6 +83,10 @@ for (const file of fs.readdirSync(DIR.posts)) {
 
   let html = marked.parse(content, { gfm: true, breaks: false });
 
+  /* 兜底：后台插图可能写成 public/assets/xxx，public 是仓库目录不进站点根，
+     这里统一改写成站点根路径，避免图片 404 */
+  html = html.replace(/(src|href)="\.?\/?public\//g, '$1="/');
+
   /* 给 h2/h3 加锚点，同时收集目录 */
   const toc = [];
   html = html.replace(/<h([23])>([\s\S]*?)<\/h\1>/g, (_m, d, inner) => {
