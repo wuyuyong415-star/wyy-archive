@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>列表 · wyy 档案</title>
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body id="top" data-page="list">
+<div class="bg-glow"><i class="g1"></i><i class="g2"></i></div>
+<div class="bg-grid"></div>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <a class="brand" href="index.html"><span class="mark">w</span>wyy<small>archive</small></a>
+    <nav class="nav"><!-- 由 site.js 按分区配置生成 --></nav>
+    <div class="top-right">
+      <button class="kbtn" id="focusSearch">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.4-3.4"/></svg>
+        搜索
+        <kbd>⌘K</kbd>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- 页面头由 ?s=分区id 决定，无需复制页面 -->
+  <div class="page-head">
+    <div class="crumbs">
+      <a href="index.html">首页</a><span class="sep">/</span><span id="crumbNow">全部归档</span>
+    </div>
+    <h1 id="listTitle">全部归档</h1>
+    <p class="sub" id="listSub"></p>
+    <div class="meta-row" id="listMeta"></div>
+  </div>
+
+  <div class="toolbar">
+    <div class="fchips" id="typeChips"></div>
+    <div class="grow"></div>
+    <div class="tbar-search">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.4-3.4"/></svg>
+      <input id="q" type="search" placeholder="在标题和摘要里搜…" autocomplete="off" />
+    </div>
+  </div>
+
+  <div class="list-wrap">
+    <div>
+      <div class="entries" id="entries"></div>
+
+      <div class="pagination">
+        <span class="pg dis">← 上一页</span>
+        <div class="pages">
+          <span class="pg on">1</span>
+          <a class="pg" href="#">2</a>
+          <a class="pg" href="#">3</a>
+          <span class="pg dis">…</span>
+          <a class="pg" href="#">6</a>
+        </div>
+        <a class="pg" href="#">下一页 →</a>
+      </div>
+    </div>
+
+    <aside>
+      <div class="side-block">
+        <div class="h"><span>// 主题</span></div>
+        <div class="tags" id="tagCloud"></div>
+      </div>
+
+      <div class="side-block">
+        <div class="h"><span>// 按年份</span></div>
+        <div class="tags" id="yearCloud"></div>
+      </div>
+
+      <a class="rss" href="#"><span>RSS 订阅这个分区</span><span>↗</span></a>
+    </aside>
+  </div>
+</main>
+
+<footer>
+  <div class="foot-in">
+    <div class="l"><span class="dot"></span>wyy · 个人档案 · 手写 HTML，无框架</div>
+    <div class="links">
+      <a href="#">RSS</a><a href="#">GitHub</a><a href="#">邮箱</a><a href="#top">回到顶部 ↑</a>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+</body>
+</html>

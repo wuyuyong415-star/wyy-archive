@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>wyy · 个人档案</title>
+<meta name="description" content="放在这里的东西：证书、思考、项目、日记、学习资料与笔记。" />
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body id="top" data-page="index">
+<div class="bg-glow"><i class="g1"></i><i class="g2"></i></div>
+<div class="bg-grid"></div>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <a class="brand" href="index.html"><span class="mark">w</span>wyy<small>archive</small></a>
+    <nav class="nav"><!-- 由 site.js 按分区配置生成 --></nav>
+    <div class="top-right">
+      <button class="kbtn" id="focusSearch">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.4-3.4"/></svg>
+        搜索
+        <kbd>⌘K</kbd>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- ============ Hero ============ -->
+  <section class="hero">
+    <div>
+      <div class="eyebrow">personal archive · 2021 — 2026</div>
+      <h1>把学过的东西，<br /><span class="grad-text">摊开放在这里。</span></h1>
+      <p class="lede">
+        证书、项目、笔记、日记，还有一些没想清楚就写下来的念头。
+        不为展示，只为<b>放得下、找得到</b>——毕竟记忆比硬盘脆。
+      </p>
+
+      <div class="search">
+        <input id="q" type="search" placeholder="搜笔记、项目、证书、日记…" autocomplete="off" aria-label="搜索站内内容" />
+        <svg class="si" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.4-3.4"/></svg>
+        <span class="sk">⌘K</span>
+      </div>
+
+      <!-- 数字由配置里的 heroStats 决定 -->
+      <div class="hstats" id="hstats"></div>
+    </div>
+
+    <aside class="panel reveal">
+      <div class="panel-h">
+        <span>archive status</span>
+        <span class="live"><i></i>运行中</span>
+      </div>
+      <div class="heat" id="heat" aria-hidden="true"></div>
+      <div class="heat-foot">
+        <span>最近 14 周更新</span>
+        <span class="lg">
+          <i style="background:rgba(255,255,255,.055)"></i>
+          <i style="background:rgba(255,192,120,.22)"></i>
+          <i style="background:rgba(255,192,120,.42)"></i>
+          <i style="background:rgba(255,192,120,.68)"></i>
+          <i style="background:var(--amber)"></i>
+        </span>
+      </div>
+      <div class="panel-rows">
+        <div class="p-row">
+          <span class="l"><i class="d" style="background:var(--mint)"></i>本周新增</span>
+          <span class="r">3 篇笔记 · 1 项目</span>
+        </div>
+        <div class="p-row">
+          <span class="l"><i class="d" style="background:var(--amber)"></i>最近更新</span>
+          <span class="r">2 小时前</span>
+        </div>
+        <div class="p-row">
+          <span class="l"><i class="d" style="background:var(--blue)"></i>资料总量</span>
+          <span class="r">23 份 · 486 MB</span>
+        </div>
+        <div class="p-row">
+          <span class="l"><i class="d" style="background:var(--violet)"></i>连续更新</span>
+          <span class="r">17 天</span>
+        </div>
+      </div>
+    </aside>
+  </section>
+
+  <!-- ============ 分区入口（自动生成） ============ -->
+  <section class="block" id="sections">
+    <div class="sec-head reveal">
+      <div>
+        <div class="label">sections</div>
+        <h2>分区</h2>
+      </div>
+      <a class="more" href="list.html">全部归档 →</a>
+    </div>
+    <div class="modules" id="modules"></div>
+  </section>
+
+  <!-- ============ 最近更新（自动生成） ============ -->
+  <section class="block" id="latest">
+    <div class="sec-head reveal">
+      <div>
+        <div class="label">latest</div>
+        <h2>最近更新</h2>
+      </div>
+      <a class="more" href="list.html">按时间线看全部 →</a>
+    </div>
+
+    <div class="latest-grid">
+      <div class="feed" id="feed"></div>
+
+      <aside>
+        <div class="side-block reveal">
+          <div class="h"><span>// 主题</span></div>
+          <div class="tags">
+            <a href="list.html?s=notes">数据结构</a>
+            <a href="list.html?s=notes">计算机网络</a>
+            <a href="list.html?s=notes">Go</a>
+            <a href="list.html?s=notes">数据库</a>
+            <a href="list.html?s=notes">操作系统</a>
+            <a href="list.html">全部 →</a>
+          </div>
+        </div>
+
+        <div class="side-block reveal">
+          <div class="h"><span>// now</span></div>
+          <ul class="now">
+            <li><span class="mk">▸</span><span>在读 <b>《数据密集型应用系统设计》</b>第 6 章</span></li>
+            <li><span class="mk">▸</span><span>整理 <b>操作系统</b> 的复习笔记</span></li>
+            <li><span class="mk">▸</span><span>给档案站加 <b>标签页</b></span></li>
+          </ul>
+        </div>
+
+        <a class="rss reveal" href="#"><span>RSS 订阅更新</span><span>↗</span></a>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ============ 项目（自动生成） ============ -->
+  <section class="block">
+    <div class="sec-head reveal">
+      <div>
+        <div class="label">projects</div>
+        <h2>在做的东西</h2>
+      </div>
+      <a class="more" href="list.html?s=projects">全部项目 →</a>
+    </div>
+    <div class="projects" id="projects"></div>
+  </section>
+
+  <!-- ============ 证书摘要（自动生成） ============ -->
+  <section class="block">
+    <div class="sec-head reveal">
+      <div>
+        <div class="label">certificates</div>
+        <h2>证书</h2>
+      </div>
+      <a class="more" href="certs.html">全部 →</a>
+    </div>
+
+    <div class="cert-head">
+      <span>证书名称</span><span>颁发机构</span><span>日期</span><span>编号</span><span>验证</span>
+    </div>
+    <div class="cert-list" id="certs"></div>
+  </section>
+</main>
+
+<footer>
+  <div class="foot-in">
+    <div class="l"><span class="dot"></span>wyy · 个人档案 · 手写 HTML，无框架</div>
+    <div class="links">
+      <a href="#">RSS</a><a href="#">GitHub</a><a href="#">邮箱</a><a href="#top">回到顶部 ↑</a>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+<script>
+/* 热力图：纯装饰，确定性伪随机 */
+(function () {
+  var heat = document.getElementById('heat');
+  if (!heat) return;
+  var seed = 20261116;
+  var rnd = function () { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; };
+  var frag = document.createDocumentFragment();
+  for (var i = 0; i < 98; i++) {
+    var cell = document.createElement('i');
+    var v = rnd();
+    var lv = v > 0.93 ? 'l4' : v > 0.82 ? 'l3' : v > 0.66 ? 'l2' : v > 0.42 ? 'l1' : '';
+    if (lv) cell.className = lv;
+    cell.title = (v > 0.42 ? Math.round(v * 6) : 0) + ' 次更新';
+    frag.appendChild(cell);
+  }
+  heat.appendChild(frag);
+})();
+</script>
+</body>
+</html>

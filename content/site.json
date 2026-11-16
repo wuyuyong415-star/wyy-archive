@@ -1,0 +1,195 @@
+{
+  "brand": "wyy",
+  "brandNote": "archive",
+  "heroStats": ["notes", "certs", "projects", "diary"],
+  "feedLimit": 6,
+
+  "sections": [
+    {
+      "id": "certs",
+      "name": "证书",
+      "icon": "◉",
+      "color": "amber",
+      "kind": "cert",
+      "unit": "张",
+      "desc": "考试、竞赛、课程结业。机构、日期、编号都留着，能查的附查询链接。",
+      "meta": "不公开扫描件",
+      "page": "certs.html",
+      "countFrom": "certs"
+    },
+    {
+      "id": "notes",
+      "name": "学习笔记",
+      "icon": "✎",
+      "color": "mint",
+      "kind": "note",
+      "unit": "篇",
+      "desc": "读书笔记与课程整理，按主题打标签，随时补。",
+      "meta": "按标签归档"
+    },
+    {
+      "id": "thoughts",
+      "name": "思考",
+      "icon": "✦",
+      "color": "violet",
+      "kind": "think",
+      "unit": "篇",
+      "desc": "读完一本书、碰到一件事之后，趁热写下来的判断和疑问。",
+      "meta": "不定期更新",
+      "isNew": true
+    },
+    {
+      "id": "projects",
+      "name": "项目",
+      "icon": "▣",
+      "color": "blue",
+      "kind": "proj",
+      "unit": "个",
+      "desc": "做过的工具和玩具，标注技术栈、状态和踩过的坑。",
+      "meta": "3 个在维护",
+      "countFrom": "projects"
+    },
+    {
+      "id": "diary",
+      "name": "日记",
+      "icon": "❏",
+      "color": "pink",
+      "kind": "diary",
+      "unit": "条",
+      "desc": "没什么结构的日常。标题公开，点进去才看正文。",
+      "meta": "最新一篇在前"
+    },
+    {
+      "id": "files",
+      "name": "学习资料",
+      "icon": "▤",
+      "color": "slate",
+      "kind": "file",
+      "unit": "份",
+      "desc": "课件、PDF、整理过的表格。能下载的都在这里。",
+      "meta": "可下载"
+    }
+  ],
+
+  "projects": [
+    {
+      "name": "个人档案站",
+      "year": "2026",
+      "status": "live",
+      "statusText": "运行中",
+      "desc": "把证书、笔记、日记收在一个地方。纯静态，搜索在前端跑，不需要数据库。",
+      "stack": ["HTML", "CSS", "Vanilla JS", "Pages"],
+      "links": [
+        { "text": "项目详情", "url": "personal-archive-v3.html" },
+        { "text": "源码", "url": "#" }
+      ]
+    },
+    {
+      "name": "课程表小工具",
+      "year": "2026",
+      "status": "wip",
+      "statusText": "进行中",
+      "desc": "本地存课表，按周切换，能算出还剩几节课。数据只留在浏览器里。",
+      "stack": ["Vue 3", "IndexedDB", "Vite"],
+      "links": [
+        { "text": "项目详情", "url": "#" },
+        { "text": "源码", "url": "#" }
+      ]
+    },
+    {
+      "name": "单词记忆 CLI",
+      "year": "2025",
+      "status": "arch",
+      "statusText": "已归档",
+      "desc": "终端里背单词，按遗忘曲线排期。写完之后发现自己还是用纸质卡片。",
+      "stack": ["Python", "SQLite"],
+      "links": [
+        { "text": "项目详情", "url": "#" },
+        { "text": "源码", "url": "#" }
+      ]
+    }
+  ],
+
+  "certs": [
+    {
+      "name": "全国计算机等级考试 二级（C 语言）",
+      "code": "NCRE · 合格",
+      "org": "教育部教育考试院",
+      "date": "2026.09",
+      "no": "26·C·••••4417",
+      "cat": "exam",
+      "catName": "考试",
+      "url": "#"
+    },
+    {
+      "name": "大学英语六级 CET-6",
+      "code": "CET · 512 分",
+      "org": "全国大学英语四六级考试委员会",
+      "date": "2026.06",
+      "no": "26·6·••••0823",
+      "cat": "exam",
+      "catName": "考试",
+      "url": "#"
+    },
+    {
+      "name": "蓝桥杯 软件类 省赛 二等奖",
+      "code": "LANQIAO · C/C++ 组",
+      "org": "工业和信息化部人才交流中心",
+      "date": "2026.04",
+      "no": "LQ·26·••••1902",
+      "cat": "contest",
+      "catName": "竞赛",
+      "url": "#"
+    },
+    {
+      "name": "数据结构与算法（上）课程结业",
+      "code": "MOOC · 优秀",
+      "org": "MOOC 平台",
+      "date": "2025.12",
+      "no": "— — — —",
+      "cat": "course",
+      "catName": "课程",
+      "note": "无公开链接"
+    },
+    {
+      "name": "普通话水平测试 二级甲等",
+      "code": "PSC · 甲等",
+      "org": "省语言文字工作委员会",
+      "date": "2025.11",
+      "no": "PSC·25·••••3388",
+      "cat": "exam",
+      "catName": "考试",
+      "url": "#"
+    },
+    {
+      "name": "数学建模竞赛 校内赛 三等奖",
+      "code": "校赛 · 团队",
+      "org": "所在学院",
+      "date": "2025.09",
+      "no": "— — — —",
+      "cat": "contest",
+      "catName": "竞赛",
+      "note": "仅纸质"
+    },
+    {
+      "name": "计算机网络 慕课结业",
+      "code": "MOOC · 优秀",
+      "org": "MOOC 平台",
+      "date": "2025.06",
+      "no": "— — — —",
+      "cat": "course",
+      "catName": "课程",
+      "note": "无公开链接"
+    },
+    {
+      "name": "大学英语四级 CET-4",
+      "code": "CET · 547 分",
+      "org": "全国大学英语四六级考试委员会",
+      "date": "2024.12",
+      "no": "24·2·••••7719",
+      "cat": "exam",
+      "catName": "考试",
+      "url": "#"
+    }
+  ]
+}

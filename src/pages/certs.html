@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>证书 · wyy 档案</title>
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body id="top" data-page="certs">
+<div class="bg-glow"><i class="g1"></i><i class="g2"></i></div>
+<div class="bg-grid"></div>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <a class="brand" href="index.html"><span class="mark">w</span>wyy<small>archive</small></a>
+    <nav class="nav"><!-- 由 site.js 按分区配置生成 --></nav>
+    <div class="top-right">
+      <button class="kbtn" id="focusSearch">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.4-3.4"/></svg>
+        搜索
+        <kbd>⌘K</kbd>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="page-head">
+    <div class="crumbs">
+      <a href="index.html">首页</a><span class="sep">/</span><span>证书</span>
+    </div>
+    <h1>证书</h1>
+    <p class="sub">
+      考试、竞赛、课程结业的记录。这里只放<b>名称、机构、日期和验证入口</b>，
+      扫描件不公开——需要原件请联系我。
+    </p>
+    <div class="meta-row" id="listMeta"></div>
+  </div>
+
+  <div class="toolbar">
+    <div class="fchips" id="typeChips"></div>
+    <div class="grow"></div>
+    <div class="tbar-search">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.4-3.4"/></svg>
+      <input id="q" type="search" placeholder="搜证书名称或机构…" autocomplete="off" />
+    </div>
+  </div>
+
+  <div style="padding-top:18px">
+    <div class="cert-head">
+      <span>证书名称</span><span>颁发机构</span><span>日期</span><span>编号</span><span>验证</span>
+    </div>
+    <!-- 证书由 site.js 里的 SITE.certs 渲染 -->
+    <div class="cert-list" id="certs"></div>
+  </div>
+
+  <!-- ============ 说明 ============ -->
+  <section class="block">
+    <div class="sec-head">
+      <div>
+        <div class="label">how to verify</div>
+        <h2>怎么验证这些证书</h2>
+      </div>
+    </div>
+    <div class="prose" style="max-width:none">
+      <div class="callout">
+        <span class="ci">◈</span>
+        <div>
+          <b>编号是打码的。</b>证书编号属于可被冒用的标识，站上只保留前后几位。
+          要核对完整编号或看扫描件，请通过邮箱联系，我会在确认身份后提供。
+        </div>
+      </div>
+      <ol>
+        <li>点右侧「验证 ↗」进入发证机构的官方查询页（NCRE、CET、蓝桥杯等都有公开查询入口）。</li>
+        <li>输入我的姓名与该证书的完整编号，可查到成绩与证书状态。</li>
+        <li>显示「无公开链接」的，说明该机构不提供在线查询，只能核纸质原件。</li>
+      </ol>
+      <p style="color:var(--dim-2);font-size:13px">
+        提示：核验时请以官方页面为准，本站信息仅作索引，不作为凭证。
+      </p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="foot-in">
+    <div class="l"><span class="dot"></span>wyy · 个人档案 · 手写 HTML，无框架</div>
+    <div class="links">
+      <a href="#">RSS</a><a href="#">GitHub</a><a href="#">邮箱</a><a href="#top">回到顶部 ↑</a>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+</body>
+</html>

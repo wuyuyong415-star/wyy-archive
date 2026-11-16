@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{{TITLE}} · {{BRAND}} {{BRAND_NOTE}}</title>
+<meta name="description" content="{{SUMMARY}}" />
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body id="top" data-page="post">
+<div class="bg-glow"><i class="g1"></i><i class="g2"></i></div>
+<div class="bg-grid"></div>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <a class="brand" href="index.html"><span class="mark">w</span>{{BRAND}}<small>{{BRAND_NOTE}}</small></a>
+    <nav class="nav"><!-- 由 site.js 按分区配置生成，当前分区用 ?s= 指定 --></nav>
+    <div class="top-right">
+      <button class="kbtn" onclick="location.href='index.html'">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.4-3.4"/></svg>
+        搜索
+        <kbd>⌘K</kbd>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- ============ 文章头 ============ -->
+  <div class="page-head">
+    <div class="crumbs">
+      {{CRUMB}}
+    </div>
+    <h1>{{TITLE}}</h1>
+    <div class="meta-row">
+      {{META}}
+    </div>
+  </div>
+
+  <div class="post-wrap">
+    <!-- ============ 正文 ============ -->
+    <article class="prose">
+{{BODY}}
+    </article>
+
+    <!-- ============ 目录 ============ -->
+    <aside class="toc">
+      <div class="h">// 本文目录</div>
+      <ol id="toc">
+{{TOC}}
+      </ol>
+    </aside>
+  </div>
+
+  <!-- ============ 上下篇 ============ -->
+  <nav class="post-nav">
+{{POST_NAV}}
+  </nav>
+</main>
+
+<footer>
+  <div class="foot-in">
+    <div class="l"><span class="dot"></span>{{BRAND}} · 个人档案 · 手写 HTML，无框架</div>
+    <div class="links">
+      <a href="#">RSS</a><a href="#">GitHub</a><a href="#">邮箱</a><a href="#top">回到顶部 ↑</a>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/data.js"></script>
+<script src="assets/site.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  /* 目录高亮（scroll spy） */
+  var links = Array.prototype.slice.call(document.querySelectorAll('#toc a'));
+  var targets = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
+
+  function spy() {
+    var pos = window.scrollY + 120;
+    var idx = -1;
+    targets.forEach(function (t, i) {
+      if (t && t.offsetTop <= pos) idx = i;
+    });
+    links.forEach(function (a, i) { a.classList.toggle('on', i === idx); });
+  }
+  window.addEventListener('scroll', spy, { passive: true });
+  spy();
+
+  /* 目录平滑滚动 */
+  links.forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      var t = document.querySelector(a.getAttribute('href'));
+      if (!t) return;
+      e.preventDefault();
+      window.scrollTo({ top: t.offsetTop - 80, behavior: 'smooth' });
+    });
+  });
+})();
+</script>
+</body>
+</html>

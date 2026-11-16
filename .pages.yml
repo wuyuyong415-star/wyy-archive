@@ -1,0 +1,48 @@
+media: public/assets/uploads
+
+content:
+  - name: posts
+    label: 文章
+    type: collection
+    path: content/posts
+    filename: '{primary}.md'
+    view:
+      primary: title
+      sort: [date, desc]
+      fields: [title, date, section]
+    fields:
+      - name: title
+        label: 标题
+        type: string
+        required: true
+      - name: date
+        label: 日期
+        type: date
+        required: true
+      - name: section
+        label: 分区
+        type: select
+        options:
+          values:
+            - notes
+            - thoughts
+            - projects
+            - diary
+            - files
+      - name: summary
+        label: 摘要（列表页显示这句）
+        type: text
+      - name: tags
+        label: 标签
+        type: string
+        list: true
+      - name: minutes
+        label: 阅读时长（分钟，留空自动算）
+        type: number
+      - name: draft
+        label: 草稿（勾上就不发布）
+        type: boolean
+        default: false
+      - name: body
+        label: 正文
+        type: rich-text

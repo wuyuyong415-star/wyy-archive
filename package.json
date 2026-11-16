@@ -1,0 +1,15 @@
+{
+  "name": "wyy-archive",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3",
+    "marked": "^18.0.0"
+  },
+  "devDependencies": {
+    "wrangler": "^4.42.0"
+  }
+}
