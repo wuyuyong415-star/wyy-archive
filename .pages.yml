@@ -1,4 +1,6 @@
-media: public/assets/uploads
+media:
+  input: public/assets/uploads
+  output: /assets/uploads
 
 content:
   - name: posts
