@@ -87,7 +87,7 @@
       "desc": "把证书、笔记、日记收在一个地方。纯静态，搜索在前端跑，不需要数据库。",
       "stack": ["HTML", "CSS", "Vanilla JS", "Pages"],
       "links": [
-        { "text": "项目详情", "url": "personal-archive-v3.html" },
+        { "text": "项目详情", "url": "/personal-archive-v3" },
         { "text": "源码", "url": "#" }
       ]
     },

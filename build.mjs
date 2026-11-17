@@ -153,7 +153,14 @@ fs.mkdirSync(path.join(DIR.dist, 'assets'), { recursive: true });
 /* ---------- 站点配置 ---------- */
 const site = readJSON(path.join(DIR.content, 'site.json'));
 const SITE_URL = String(site.url || '').replace(/\/+$/, '');
-const abs = (p) => (SITE_URL ? `${SITE_URL}/${p}` : p);
+const abs = (p) => (SITE_URL ? `${SITE_URL}/${p}` : `/${p}`);
+
+/* 站内链接统一用无扩展名 URL：Cloudflare 静态资源会把 /foo 解析到 foo.html，
+   老的 foo.html 链接会自动 307 跳过去，所以不必担心旧链接失效。 */
+const pageUrl = (file) => {
+  const base = file.replace(/\.html$/i, '');
+  return base === 'index' ? '' : base;
+};
 const today = new Date();
 const TODAY = isoDate(today);
 
@@ -270,7 +277,7 @@ const entries = posts.map((p) => ({
   words: p.words,
   summary: p.summary,
   tags: p.tags,
-  url: `${p.slug}.html?s=${p.section}`,
+  url: `/${p.slug}`,
 }));
 
 const dataJS =
@@ -306,12 +313,16 @@ function injectMeta(html, { url, title, desc, type, noindex }) {
 }
 
 /* ---------- 普通页面：注入 data.js + head 元信息 ---------- */
-const DATA_TAG = '<script src="assets/data.js"></script>\n<script src="assets/site.js"></script>';
+/* 资源路径一律转成根绝对路径。404 页会被挂在任意深度的请求路径上，
+   相对路径在那里会全部失效，所以不能用相对引用。 */
+const rootAssets = (html) => html.replace(/((?:src|href)=["'])assets\//g, '$1/assets/');
+
+const DATA_TAG = '<script src="/assets/data.js"></script>\n<script src="/assets/site.js"></script>';
 for (const file of fs.readdirSync(DIR.pages)) {
   if (!file.endsWith('.html')) continue;
-  let html = fs.readFileSync(path.join(DIR.pages, file), 'utf8');
-  if (html.includes('<script src="assets/site.js"></script>')) {
-    html = html.replace('<script src="assets/site.js"></script>', DATA_TAG);
+  let html = rootAssets(fs.readFileSync(path.join(DIR.pages, file), 'utf8'));
+  if (html.includes('src="/assets/site.js"')) {
+    html = html.replace('<script src="/assets/site.js"></script>', DATA_TAG);
   } else {
     html = html.replace('</body>', DATA_TAG + '\n</body>');
   }
@@ -319,7 +330,7 @@ for (const file of fs.readdirSync(DIR.pages)) {
   const title = (html.match(/<title>([\s\S]*?)<\/title>/) || [, site.brand])[1].trim();
   const desc = (html.match(/<meta name="description" content="([\s\S]*?)"/) || [, ''])[1];
   html = injectMeta(html, {
-    url: file,
+    url: pageUrl(file),
     title,
     desc,
     noindex: file === '404.html',
@@ -340,8 +351,8 @@ posts.forEach((p, i) => {
   const sec = sectionOf(p.section) || { id: p.section, name: '未分类', kind: 'file' };
 
   const crumb = [
-    '<a href="index.html">首页</a><span class="sep">/</span>',
-    `<a href="list.html?s=${esc(sec.id)}">${esc(sec.name)}</a><span class="sep">/</span>`,
+    '<a href="/">首页</a><span class="sep">/</span>',
+    `<a href="/list?s=${esc(sec.id)}">${esc(sec.name)}</a><span class="sep">/</span>`,
     `<span>${esc(p.title)}</span>`,
   ].join('');
 
@@ -367,16 +378,16 @@ posts.forEach((p, i) => {
   const navItems = [];
   if (newer) {
     navItems.push(
-      `<a href="${newer.slug}.html?s=${newer.section}">\n      <span class="k">← 上一篇</span>\n      <span class="t">${esc(newer.title)}</span>\n    </a>`
+      `<a href="/${newer.slug}">\n      <span class="k">← 上一篇</span>\n      <span class="t">${esc(newer.title)}</span>\n    </a>`
     );
   }
   if (older) {
     navItems.push(
-      `<a href="${older.slug}.html?s=${older.section}" class="next">\n      <span class="k">下一篇 →</span>\n      <span class="t">${esc(older.title)}</span>\n    </a>`
+      `<a href="/${older.slug}" class="next">\n      <span class="k">下一篇 →</span>\n      <span class="t">${esc(older.title)}</span>\n    </a>`
     );
   }
 
-  let out = tpl
+  let out = rootAssets(tpl)
     .replaceAll('{{TITLE}}', esc(p.title))
     .replaceAll('{{BRAND}}', esc(site.brand))
     .replaceAll('{{BRAND_NOTE}}', esc(site.brandNote || ''))
@@ -389,7 +400,7 @@ posts.forEach((p, i) => {
     .replaceAll('{{POST_NAV}}', navItems.join('\n    '));
 
   out = injectMeta(out, {
-    url: `${p.slug}.html`,
+    url: p.slug,
     title: `${p.title} · ${site.brand} ${site.brandNote || ''}`.trim(),
     desc: p.summary,
     type: 'article',
@@ -400,9 +411,9 @@ posts.forEach((p, i) => {
 
 /* ---------- sitemap.xml / feed.xml / robots.txt ---------- */
 const pageMeta = [
-  { url: 'index.html', pri: '1.0' },
-  { url: 'list.html', pri: '0.8' },
-  { url: 'certs.html', pri: '0.6' },
+  { url: '', pri: '1.0' },
+  { url: 'list', pri: '0.8' },
+  { url: 'certs', pri: '0.6' },
 ];
 
 const sitemap =
@@ -418,7 +429,7 @@ const sitemap =
   posts
     .map(
       (p) =>
-        `  <url><loc>${esc(abs(p.slug + '.html'))}</loc><lastmod>${esc(p.date || TODAY)}</lastmod><priority>0.7</priority></url>`
+        `  <url><loc>${esc(abs(p.slug))}</loc><lastmod>${esc(p.date || TODAY)}</lastmod><priority>0.7</priority></url>`
     )
     .join('\n') +
   '\n</urlset>\n';
@@ -433,14 +444,14 @@ const feed =
   '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">\n' +
   '<channel>\n' +
   `  <title>${esc(`${site.brand} · 个人档案`)}</title>\n` +
-  `  <link>${esc(abs('index.html'))}</link>\n` +
+  `  <link>${esc(abs(''))}</link>\n` +
   `  <description>${esc('证书、项目、笔记、日记，还有一些没想清楚就写下来的念头。')}</description>\n` +
   '  <language>zh-CN</language>\n' +
   `  <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>\n` +
   `  <atom:link href="${esc(abs('feed.xml'))}" rel="self" type="application/rss+xml"/>\n` +
   posts
     .map((p) => {
-      const link = abs(`${p.slug}.html`);
+      const link = abs(p.slug);
       return (
         '  <item>\n' +
         `    <title>${esc(p.title)}</title>\n` +
@@ -470,5 +481,5 @@ const files = fs
   .filter((f) => !fs.statSync(path.join(DIR.dist, f)).isDirectory());
 
 console.log(`构建完成：${posts.length} 篇文章，${files.length} 个文件 -> dist/`);
-for (const p of posts) console.log(`  ${p.date}  ${p.slug}.html  ${p.title}`);
+for (const p of posts) console.log(`  ${p.date}  /${p.slug}  ${p.title}`);
 if (skipped.length) console.log(`未到期、本次跳过：\n  ${skipped.join('\n  ')}`);

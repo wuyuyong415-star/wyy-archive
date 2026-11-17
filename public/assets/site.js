@@ -34,7 +34,7 @@
   }
   function shortDate(d) { return d ? d.slice(5) : ''; }
   function yearOf(d) { return d ? d.slice(0, 4) : ''; }
-  function listHref(s) { return s.page || ('list.html?s=' + s.id); }
+  function listHref(s) { return s.page || ('/list?s=' + s.id); }
   function param(k) {
     var m = new RegExp('[?&]' + k + '=([^&]*)').exec(location.search);
     return m ? decodeURIComponent(m[1].replace(/\+/g, ' ')) : '';
@@ -60,7 +60,7 @@
   function renderNav(activeId) {
     var nav = document.querySelector('.nav');
     if (!nav) return;
-    var html = '<a href="index.html"' + (activeId === 'home' ? ' class="on"' : '') + '>首页</a>';
+    var html = '<a href="/"' + (activeId === 'home' ? ' class="on"' : '') + '>首页</a>';
     S.sections.forEach(function (s) {
       html += '<a href="' + listHref(s) + '"' + (s.id === activeId ? ' class="on"' : '') + '>' + esc(s.name) + '</a>';
     });
@@ -88,7 +88,7 @@
     var box = document.getElementById('footLinks');
     if (!box) return;
     var social = S.social || {};
-    var html = '<a href="feed.xml">RSS</a>';
+    var html = '<a href="/feed.xml">RSS</a>';
     if (social.github) html += '<a href="' + esc(social.github) + '" target="_blank" rel="noopener">GitHub</a>';
     if (social.email) html += '<a href="mailto:' + esc(social.email) + '">邮箱</a>';
     html += '<a href="#top">回到顶部 ↑</a>';
@@ -253,8 +253,8 @@
       return;
     }
     box.innerHTML = keys.map(function (k) {
-      return '<a href="list.html?tag=' + encodeURIComponent(k) + '">' + esc(k) + '</a>';
-    }).join('') + '<a href="list.html">全部 →</a>';
+      return '<a href="/list?tag=' + encodeURIComponent(k) + '">' + esc(k) + '</a>';
+    }).join('') + '<a href="/list">全部 →</a>';
   }
 
   /* ---------- 首页：搜索框过滤「最近更新」，回车去全站搜 ---------- */
@@ -280,7 +280,7 @@
     q.addEventListener('keydown', function (e) {
       if (e.key !== 'Enter') return;
       var v = (q.value || '').trim();
-      if (v) location.href = 'list.html?q=' + encodeURIComponent(v);
+      if (v) location.href = '/list?q=' + encodeURIComponent(v);
     });
   }
 
@@ -454,7 +454,7 @@
       if (state.q) parts.push('q=' + encodeURIComponent(state.q));
       if (state.page > 1) parts.push('page=' + state.page);
       try {
-        history.replaceState(null, '', 'list.html' + (parts.length ? '?' + parts.join('&') : ''));
+        history.replaceState(null, '', '/list' + (parts.length ? '?' + parts.join('&') : ''));
       } catch (err) { /* file:// 下会被拦，忽略 */ }
     }
 
