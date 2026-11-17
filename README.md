@@ -33,12 +33,14 @@ content/
   site.json         站点名、分区、项目、证书  ← 偶尔改
 src/
   post.html         文章页模板（含 {{TITLE}} 等占位符）
-  pages/            首页 / 归档页 / 证书页
+  pages/            首页 / 归档页 / 证书页 / 404
+  admin.html        评论管理页（不公开链接，noindex）
+  worker.js         评论接口（/api/*），其余请求交还静态资源
 public/
   assets/           样式与脚本，原样拷贝进 dist
   assets/uploads/   后台上传的图片
 build.mjs           构建脚本：md + site.json → dist/
-wrangler.jsonc      Cloudflare 部署配置（name 决定网址前缀）
+wrangler.jsonc      Cloudflare 部署配置（name 决定网址前缀，D1 绑定在这里）
 .pages.yml          网页后台的字段配置
 dist/               构建产物，每次构建会整体重建，不要手改
 ```
@@ -137,6 +139,32 @@ npm run build     # md + site.json -> dist/
 
 ---
 
+## 评论
+
+文章页底部有评论区，匿名昵称即可发言，**发出去立刻显示**，你可以在 `/admin` 里把不合适的隐藏掉。
+
+因为站点本来是纯静态的，评论需要三个额外的部件：
+
+| 部件 | 位置 | 作用 |
+|---|---|---|
+| Worker 脚本 | `src/worker.js` | 只接管 `/api/*`，其余请求原样交给静态资源 |
+| D1 数据库 | Cloudflare → 存储和数据库 → D1 | 存评论；表在第一次请求时自动建 |
+| 管理口令 | Worker 环境变量 `ADMIN_TOKEN` | 打开 `/admin` 用的密码 |
+
+一次性配置（只做一遍）：
+
+1. Cloudflare 控制台 → **存储和数据库 → D1 SQL 数据库 → 创建**，名字填 `wyy-comments`
+2. 创建后复制 **Database ID**，填进 `wrangler.jsonc` 的 `database_id`
+3. Worker → **设置 → 变量和机密 → 添加**，类型选「机密」，名称 `ADMIN_TOKEN`，值自己定一串
+
+之后每次 `git push`，Cloudflare 会同时部署 Worker 和静态资源。
+
+**防垃圾评论**：表单里有一个对真人不可见的蜜罐字段，填了就当成功但不入库；同一 IP 10 分钟内最多 3 条；昵称 20 字、正文 1000 字上限。仍然漏进来的，去 `/admin` 点「隐藏」。
+
+`/admin` 不进导航、不进 sitemap、`robots.txt` 里也 Disallow 了，但**它本身没有登录系统**——靠你不知道口令进不去。口令只存在你浏览器的 localStorage 里，不会出现在网址里（管理接口同时支持 `?token=`，方便命令行调试）。
+
+---
+
 ## 站点自带的功能
 
 构建和前端脚本已经实现，改内容时不用管：
@@ -155,6 +183,8 @@ npm run build     # md + site.json -> dist/
 | 分享卡片 | 所有页面 | 构建时注入 `og:*`、canonical、favicon、theme-color |
 | 手机导航 | 全站 | ≤820px 显示汉堡菜单 |
 | 定时发布 | 构建时 | `date` 填未来日期的文章，到日子之前构建会跳过 |
+| 评论 | 文章页底部 | 匿名昵称、即时显示、蜜罐 + 频率限制，见上一节 |
+| 评论管理 | `/admin` | 输口令后能看全部评论并隐藏/恢复 |
 
 定时发布依赖「到那天有新的构建」——如果你的仓库那天没有推送，它不会自动出现。想准时上线就设个提醒当天推一次。
 

@@ -339,6 +339,16 @@ for (const file of fs.readdirSync(DIR.pages)) {
   fs.writeFileSync(path.join(DIR.dist, file), html, 'utf8');
 }
 
+/* ---------- 管理页：不进导航、不进 sitemap，也不需要 site.js ---------- */
+const adminSrc = path.join(ROOT, 'src', 'admin.html');
+if (fs.existsSync(adminSrc)) {
+  fs.writeFileSync(
+    path.join(DIR.dist, 'admin.html'),
+    rootAssets(fs.readFileSync(adminSrc, 'utf8')),
+    'utf8'
+  );
+}
+
 /* ---------- 逐篇渲染文章页 ---------- */
 const tpl = fs.readFileSync(DIR.postTpl, 'utf8');
 
@@ -393,6 +403,7 @@ posts.forEach((p, i) => {
     .replaceAll('{{BRAND_NOTE}}', esc(site.brandNote || ''))
     .replaceAll('{{SUMMARY}}', esc(p.summary))
     .replaceAll('{{SECTION}}', esc(sec.id))
+    .replaceAll('{{SLUG}}', esc(p.slug))
     .replaceAll('{{CRUMB}}', crumb)
     .replaceAll('{{META}}', meta)
     .replaceAll('{{BODY}}', p.html)
@@ -469,6 +480,8 @@ const feed =
 const robots =
   'User-agent: *\n' +
   'Allow: /\n' +
+  'Disallow: /admin\n' +
+  'Disallow: /api/\n' +
   (SITE_URL ? `\nSitemap: ${abs('sitemap.xml')}\n` : '');
 
 fs.writeFileSync(path.join(DIR.dist, 'sitemap.xml'), sitemap, 'utf8');

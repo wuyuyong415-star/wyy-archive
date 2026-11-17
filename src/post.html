@@ -7,7 +7,7 @@
 <meta name="description" content="{{SUMMARY}}" />
 <link rel="stylesheet" href="assets/style.css" />
 </head>
-<body id="top" data-page="post" data-section="{{SECTION}}">
+<body id="top" data-page="post" data-section="{{SECTION}}" data-post="{{SLUG}}">
 <div class="bg-glow"><i class="g1"></i><i class="g2"></i></div>
 <div class="bg-grid"></div>
 
@@ -59,6 +59,27 @@
   <nav class="post-nav">
 {{POST_NAV}}
   </nav>
+
+  <!-- ============ 评论 ============ -->
+  <section class="comments" id="comments" hidden>
+    <div class="c-head">
+      <h2>评论<span class="c-count" id="cCount"></span></h2>
+      <span class="c-hint">匿名留言，说点什么都行</span>
+    </div>
+
+    <div class="c-list" id="cList"></div>
+    <p class="c-empty" id="cEmpty">还没有人说话。沙发空着。</p>
+
+    <form class="c-form" id="cForm" autocomplete="off">
+      <div class="c-row">
+        <input id="cName" name="name" type="text" maxlength="20" placeholder="昵称（最多 20 字）" required />
+        <button type="submit" id="cSend">发表</button>
+      </div>
+      <textarea id="cBody" name="body" maxlength="1000" rows="4" placeholder="想说什么…（纯文本，回车换行）" required></textarea>
+      <div class="c-hp"><input id="cHp" name="hp" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" /></div>
+      <p class="c-msg" id="cMsg"></p>
+    </form>
+  </section>
 </main>
 
 <footer>
@@ -70,6 +91,7 @@
 
 <script src="assets/data.js"></script>
 <script src="assets/site.js"></script>
+<script src="assets/comments.js"></script>
 <script>
 (function () {
   'use strict';

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>评论管理 · wyy 档案</title>
+<meta name="robots" content="noindex" />
+<link rel="stylesheet" href="/assets/style.css" />
+</head>
+<body id="top" data-page="admin">
+<div class="bg-glow"><i class="g1"></i><i class="g2"></i></div>
+<div class="bg-grid"></div>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <a class="brand" href="/"><span class="mark">w</span>wyy<small>archive</small></a>
+    <div class="top-right"><span class="c-hint">仅自己用</span></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="adm">
+    <h1>评论管理</h1>
+    <p class="lede">新评论会直接显示在文章页。这里可以看全部内容，把不合适的隐藏掉。</p>
+
+    <div class="adm-bar">
+      <input id="tok" type="password" placeholder="管理口令（ADMIN_TOKEN）" autocomplete="off" />
+      <button id="save" type="button">保存口令</button>
+      <button id="refresh" type="button" class="ghost">刷新</button>
+      <span id="stat" class="c-msg"></span>
+    </div>
+
+    <div id="rows"></div>
+  </section>
+</main>
+
+<footer>
+  <div class="foot-in">
+    <div class="l"><span class="dot"></span>wyy · 个人档案 · 管理页</div>
+  </div>
+</footer>
+
+<style>
+.adm{padding:44px 0 60px;max-width:860px;min-height:62vh}
+.adm h1{font-size:clamp(21px,2.6vw,27px);font-weight:800;letter-spacing:-.02em;margin:0 0 10px}
+.adm .lede{color:var(--dim);font-size:13.5px;line-height:1.9;margin:0 0 26px}
+.adm-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:22px}
+.adm-bar input{
+  flex:1;min-width:200px;background:rgba(255,255,255,.035);border:1px solid var(--line-2);
+  border-radius:10px;padding:10px 13px;color:var(--text);font-size:13px;outline:none;
+}
+.adm-bar input:focus{border-color:rgba(255,192,120,.55)}
+.adm-bar button{
+  border:1px solid rgba(255,192,120,.35);border-radius:10px;background:rgba(255,192,120,.12);
+  color:var(--amber);font-size:12.5px;font-weight:600;padding:10px 20px;cursor:pointer;
+  white-space:nowrap;
+}
+.adm-bar button.ghost{background:rgba(255,255,255,.03);border-color:var(--line-2);color:var(--dim)}
+.adm-item{
+  border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:10px;
+  background:rgba(255,255,255,.018);
+}
+.adm-item.hide{opacity:.45}
+.adm-meta{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:6px}
+.adm-meta b{font-size:13px}
+.adm-meta a{font-family:var(--mono);font-size:11px;color:var(--blue);text-decoration:none}
+.adm-meta time{font-family:var(--mono);font-size:10.5px;color:var(--dim-2)}
+.adm-meta .tag{font-family:var(--mono);font-size:10px;color:var(--pink);border:1px solid rgba(255,157,176,.3);border-radius:4px;padding:0 5px}
+.adm-text{font-size:13.5px;line-height:1.8;color:#c6cdd8;white-space:pre-wrap;word-break:break-word}
+.adm-act{margin-top:10px}
+.adm-act button{
+  background:rgba(255,255,255,.04);border:1px solid var(--line-2);border-radius:8px;
+  color:var(--dim);font-size:11.5px;padding:5px 12px;cursor:pointer;
+}
+.adm-act button:hover{color:var(--text);border-color:var(--line-2)}
+</style>
+
+<script>
+(function () {
+  'use strict';
+  var KEY = 'wyy.admin.token';
+  var tok = document.getElementById('tok');
+  var rows = document.getElementById('rows');
+  var stat = document.getElementById('stat');
+
+  try { tok.value = localStorage.getItem(KEY) || ''; } catch (e) {}
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function when(ts) {
+    var d = new Date(ts * 1000);
+    var p = function (n) { return n < 10 ? '0' + n : String(n); };
+    return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+  }
+
+  function render(list) {
+    if (!list.length) { rows.innerHTML = '<p class="c-msg">还没有评论。</p>'; return; }
+    rows.innerHTML = list.map(function (c) {
+      return '<div class="adm-item' + (c.hidden ? ' hide' : '') + '" data-id="' + c.id + '">' +
+        '<div class="adm-meta"><b>' + esc(c.name) + '</b>' +
+        '<a href="/' + esc(c.post) + '" target="_blank">/' + esc(c.post) + '</a>' +
+        '<time>' + esc(when(c.createdAt)) + '</time>' +
+        (c.hidden ? '<span class="tag">已隐藏</span>' : '') + '</div>' +
+        '<div class="adm-text">' + esc(c.body) + '</div>' +
+        '<div class="adm-act"><button data-id="' + c.id + '" data-to="' + (c.hidden ? 0 : 1) + '">' +
+        (c.hidden ? '恢复显示' : '隐藏') + '</button></div></div>';
+    }).join('');
+  }
+
+  function load() {
+    var t = tok.value.trim();
+    if (!t) { stat.textContent = '先填口令'; return; }
+    stat.textContent = '读取中…';
+    fetch('/api/admin/comments?token=' + encodeURIComponent(t))
+      .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+      .then(function (res) {
+        if (!res.ok) { stat.textContent = (res.d && res.d.error) || '读取失败'; return; }
+        var list = res.d.comments || [];
+        render(list);
+        var hidden = list.filter(function (c) { return c.hidden; }).length;
+        stat.textContent = '共 ' + list.length + ' 条' + (hidden ? '（隐藏 ' + hidden + '）' : '');
+      })
+      .catch(function () { stat.textContent = '网络不通'; });
+  }
+
+  document.getElementById('save').addEventListener('click', function () {
+    try { localStorage.setItem(KEY, tok.value.trim()); } catch (e) {}
+    stat.textContent = '口令已存到本机';
+  });
+  document.getElementById('refresh').addEventListener('click', load);
+
+  rows.addEventListener('click', function (e) {
+    var btn = e.target.closest('button[data-id]');
+    if (!btn) return;
+    var t = tok.value.trim();
+    btn.disabled = true;
+    fetch('/api/admin/hide?token=' + encodeURIComponent(t), {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ id: Number(btn.getAttribute('data-id')), hidden: Number(btn.getAttribute('data-to')) })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (d) { if (d.error) { stat.textContent = d.error; btn.disabled = false; } else { load(); } })
+      .catch(function () { stat.textContent = '网络不通'; btn.disabled = false; });
+  });
+
+  if (tok.value) load();
+})();
+</script>
+</body>
+</html>
