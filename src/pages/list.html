@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>列表 · wyy 档案</title>
+<meta name="description" content="wyy 个人档案的全部条目：学习笔记、思考、项目、日记与学习资料，按时间倒序排列。" />
 <link rel="stylesheet" href="assets/style.css" />
 </head>
 <body id="top" data-page="list">
@@ -18,7 +19,10 @@
       <button class="kbtn" id="focusSearch">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.4-3.4"/></svg>
         搜索
-        <kbd>⌘K</kbd>
+        <kbd>Ctrl K</kbd>
+      </button>
+      <button class="nav-toggle" id="navToggle" type="button" aria-label="展开导航" aria-expanded="false">
+        <i></i><i></i><i></i>
       </button>
     </div>
   </div>
@@ -48,17 +52,8 @@
     <div>
       <div class="entries" id="entries"></div>
 
-      <div class="pagination">
-        <span class="pg dis">← 上一页</span>
-        <div class="pages">
-          <span class="pg on">1</span>
-          <a class="pg" href="#">2</a>
-          <a class="pg" href="#">3</a>
-          <span class="pg dis">…</span>
-          <a class="pg" href="#">6</a>
-        </div>
-        <a class="pg" href="#">下一页 →</a>
-      </div>
+      <!-- 由 site.js 按筛选结果生成，只有一页时自动隐藏 -->
+      <div class="pagination" id="pager" hidden></div>
     </div>
 
     <aside>
@@ -72,7 +67,7 @@
         <div class="tags" id="yearCloud"></div>
       </div>
 
-      <a class="rss" href="#"><span>RSS 订阅这个分区</span><span>↗</span></a>
+      <a class="rss" href="feed.xml"><span>RSS 订阅更新</span><span>↗</span></a>
     </aside>
   </div>
 </main>
@@ -80,9 +75,7 @@
 <footer>
   <div class="foot-in">
     <div class="l"><span class="dot"></span>wyy · 个人档案 · 手写 HTML，无框架</div>
-    <div class="links">
-      <a href="#">RSS</a><a href="#">GitHub</a><a href="#">邮箱</a><a href="#top">回到顶部 ↑</a>
-    </div>
+    <div class="links" id="footLinks"></div>
   </div>
 </footer>
 

@@ -22,7 +22,7 @@ content:
         type: string
         required: false
       - name: date
-        label: 日期
+        label: 日期（填未来的日期 = 定时发布）
         type: date
         required: true
       - name: section
@@ -52,3 +52,159 @@ content:
       - name: body
         label: 正文
         type: rich-text
+
+  # 站点配置：分区、项目、证书、联系方式都能在后台改，不用手写 JSON
+  - name: site
+    label: 站点设置
+    type: file
+    path: content/site.json
+    fields:
+      - name: brand
+        label: 站点名
+        type: string
+        required: true
+      - name: brandNote
+        label: 站点副标（logo 后面的小字）
+        type: string
+      - name: url
+        label: 站点网址（https:// 开头，结尾不要带斜杠）
+        type: string
+        required: true
+      - name: feedLimit
+        label: 首页「最近更新」显示几条
+        type: number
+      - name: heroStats
+        label: 首页数字（填分区 id，如 notes、certs）
+        type: string
+        list: true
+
+      - name: social
+        label: 联系方式（留空则不显示）
+        type: object
+        fields:
+          - name: github
+            label: GitHub 主页
+            type: string
+          - name: email
+            label: 邮箱
+            type: string
+
+      - name: sections
+        label: 分区
+        type: object
+        list: true
+        fields:
+          - name: id
+            label: 分区 id（文章的 section 填这个）
+            type: string
+            required: true
+          - name: name
+            label: 名称
+            type: string
+            required: true
+          - name: icon
+            label: 图标（一个符号）
+            type: string
+          - name: color
+            label: 颜色
+            type: select
+            options:
+              values: [amber, mint, violet, blue, pink, slate]
+          - name: kind
+            label: 类型（决定徽标颜色）
+            type: select
+            options:
+              values: [cert, note, think, proj, diary, file]
+          - name: unit
+            label: 单位（张 / 篇 / 个 / 条 / 份）
+            type: string
+          - name: desc
+            label: 一句话说明
+            type: text
+          - name: meta
+            label: 卡片底部的说明
+            type: string
+          - name: page
+            label: 链接到独立页面（留空则进列表页）
+            type: string
+          - name: countFrom
+            label: 数量取自（certs / projects，留空则数文章）
+            type: string
+          - name: isNew
+            label: 标 NEW
+            type: boolean
+
+      - name: projects
+        label: 项目
+        type: object
+        list: true
+        fields:
+          - name: name
+            label: 项目名
+            type: string
+            required: true
+          - name: year
+            label: 年份
+            type: string
+          - name: status
+            label: 状态
+            type: select
+            options:
+              values: [live, wip, arch]
+          - name: statusText
+            label: 状态文字（运行中 / 进行中 / 已归档）
+            type: string
+          - name: desc
+            label: 说明
+            type: text
+          - name: stack
+            label: 技术栈
+            type: string
+            list: true
+          - name: links
+            label: 链接
+            type: object
+            list: true
+            fields:
+              - name: text
+                label: 文字
+                type: string
+              - name: url
+                label: 网址（留空则不显示为链接）
+                type: string
+
+      - name: certs
+        label: 证书
+        type: object
+        list: true
+        fields:
+          - name: name
+            label: 证书名称
+            type: string
+            required: true
+          - name: code
+            label: 副行（等级 / 分数）
+            type: string
+          - name: org
+            label: 颁发机构
+            type: string
+          - name: date
+            label: 日期（如 2026.09）
+            type: string
+          - name: no
+            label: 编号（建议打码）
+            type: string
+          - name: cat
+            label: 分类
+            type: select
+            options:
+              values: [exam, contest, course]
+          - name: catName
+            label: 分类名称（考试 / 竞赛 / 课程）
+            type: string
+          - name: url
+            label: 验证链接（留空则不显示）
+            type: string
+          - name: note
+            label: 无链接时的说明
+            type: string

@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>证书 · wyy 档案</title>
+<meta name="description" content="考试、竞赛与课程结业记录：证书名称、颁发机构、日期与编号，附官方验证入口。" />
 <link rel="stylesheet" href="assets/style.css" />
 </head>
 <body id="top" data-page="certs">
@@ -18,7 +19,10 @@
       <button class="kbtn" id="focusSearch">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.4-3.4"/></svg>
         搜索
-        <kbd>⌘K</kbd>
+        <kbd>Ctrl K</kbd>
+      </button>
+      <button class="nav-toggle" id="navToggle" type="button" aria-label="展开导航" aria-expanded="false">
+        <i></i><i></i><i></i>
       </button>
     </div>
   </div>
@@ -85,9 +89,7 @@
 <footer>
   <div class="foot-in">
     <div class="l"><span class="dot"></span>wyy · 个人档案 · 手写 HTML，无框架</div>
-    <div class="links">
-      <a href="#">RSS</a><a href="#">GitHub</a><a href="#">邮箱</a><a href="#top">回到顶部 ↑</a>
-    </div>
+    <div class="links" id="footLinks"></div>
   </div>
 </footer>
 

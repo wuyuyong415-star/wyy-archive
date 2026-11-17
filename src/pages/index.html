@@ -19,7 +19,10 @@
       <button class="kbtn" id="focusSearch">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.4-3.4"/></svg>
         搜索
-        <kbd>⌘K</kbd>
+        <kbd>Ctrl K</kbd>
+      </button>
+      <button class="nav-toggle" id="navToggle" type="button" aria-label="展开导航" aria-expanded="false">
+        <i></i><i></i><i></i>
       </button>
     </div>
   </div>
@@ -37,9 +40,9 @@
       </p>
 
       <div class="search">
-        <input id="q" type="search" placeholder="搜笔记、项目、证书、日记…" autocomplete="off" aria-label="搜索站内内容" />
+        <input id="q" type="search" placeholder="搜标题、摘要、标签…（回车搜全站）" autocomplete="off" aria-label="搜索站内内容" />
         <svg class="si" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.4-3.4"/></svg>
-        <span class="sk">⌘K</span>
+        <span class="sk">Ctrl K</span>
       </div>
 
       <!-- 数字由配置里的 heroStats 决定 -->
@@ -62,24 +65,8 @@
           <i style="background:var(--amber)"></i>
         </span>
       </div>
-      <div class="panel-rows">
-        <div class="p-row">
-          <span class="l"><i class="d" style="background:var(--mint)"></i>本周新增</span>
-          <span class="r">3 篇笔记 · 1 项目</span>
-        </div>
-        <div class="p-row">
-          <span class="l"><i class="d" style="background:var(--amber)"></i>最近更新</span>
-          <span class="r">2 小时前</span>
-        </div>
-        <div class="p-row">
-          <span class="l"><i class="d" style="background:var(--blue)"></i>资料总量</span>
-          <span class="r">23 份 · 486 MB</span>
-        </div>
-        <div class="p-row">
-          <span class="l"><i class="d" style="background:var(--violet)"></i>连续更新</span>
-          <span class="r">17 天</span>
-        </div>
-      </div>
+      <!-- 数字由 site.js 按真实条目统计生成 -->
+      <div class="panel-rows" id="panelRows"></div>
     </aside>
   </section>
 
@@ -111,14 +98,8 @@
       <aside>
         <div class="side-block reveal">
           <div class="h"><span>// 主题</span></div>
-          <div class="tags">
-            <a href="list.html?s=notes">数据结构</a>
-            <a href="list.html?s=notes">计算机网络</a>
-            <a href="list.html?s=notes">Go</a>
-            <a href="list.html?s=notes">数据库</a>
-            <a href="list.html?s=notes">操作系统</a>
-            <a href="list.html">全部 →</a>
-          </div>
+          <!-- 由 site.js 按真实标签聚合 -->
+          <div class="tags" id="topics"></div>
         </div>
 
         <div class="side-block reveal">
@@ -130,7 +111,7 @@
           </ul>
         </div>
 
-        <a class="rss reveal" href="#"><span>RSS 订阅更新</span><span>↗</span></a>
+        <a class="rss reveal" href="feed.xml"><span>RSS 订阅更新</span><span>↗</span></a>
       </aside>
     </div>
   </section>
@@ -167,31 +148,10 @@
 <footer>
   <div class="foot-in">
     <div class="l"><span class="dot"></span>wyy · 个人档案 · 手写 HTML，无框架</div>
-    <div class="links">
-      <a href="#">RSS</a><a href="#">GitHub</a><a href="#">邮箱</a><a href="#top">回到顶部 ↑</a>
-    </div>
+    <div class="links" id="footLinks"></div>
   </div>
 </footer>
 
 <script src="assets/site.js"></script>
-<script>
-/* 热力图：纯装饰，确定性伪随机 */
-(function () {
-  var heat = document.getElementById('heat');
-  if (!heat) return;
-  var seed = 20261116;
-  var rnd = function () { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; };
-  var frag = document.createDocumentFragment();
-  for (var i = 0; i < 98; i++) {
-    var cell = document.createElement('i');
-    var v = rnd();
-    var lv = v > 0.93 ? 'l4' : v > 0.82 ? 'l3' : v > 0.66 ? 'l2' : v > 0.42 ? 'l1' : '';
-    if (lv) cell.className = lv;
-    cell.title = (v > 0.42 ? Math.round(v * 6) : 0) + ' 次更新';
-    frag.appendChild(cell);
-  }
-  heat.appendChild(frag);
-})();
-</script>
 </body>
 </html>

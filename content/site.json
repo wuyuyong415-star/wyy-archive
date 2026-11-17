@@ -1,8 +1,15 @@
 {
   "brand": "wyy",
   "brandNote": "archive",
-  "heroStats": ["notes", "certs", "projects", "diary"],
+  "url": "https://wyy.wuyuyong415.workers.dev",
+  "heroStats": ["notes", "certs", "projects", "thoughts", "files"],
   "feedLimit": 6,
+
+  "social": {
+    "github": "",
+    "email": ""
+  },
+
 
   "sections": [
     {
@@ -46,7 +53,7 @@
       "kind": "proj",
       "unit": "个",
       "desc": "做过的工具和玩具，标注技术栈、状态和踩过的坑。",
-      "meta": "3 个在维护",
+      "meta": "按状态标注",
       "countFrom": "projects"
     },
     {
