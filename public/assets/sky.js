@@ -5,7 +5,8 @@
      · 确定性伪随机 → 每次打开是同一片星空（可预测、不闪变）
      · 深空蓝紫渐变 + 斜向银河带 + 淡星云
      · 星分三档：微尘 / 普通 / 亮星（带光晕）
-     · 流星 8~18 秒一次，带分叉尾迹；约每 4 颗有一次大的
+     · 流星 2~3 秒一组（一道或两道），角度分陡/中/掠三档，
+       带轻微转向与分叉尾迹；约每 4 组有一次大的火流星
      · 尊重 prefers-reduced-motion：只画静态星空，不闪烁不划流星
      · 标签页隐藏时暂停；帧率上限 30fps
    ========================================================= */
@@ -153,24 +154,59 @@
     }
   }
 
-  function spawnMeteor(big) {
-    // 从右上方向左下方划过
-    var angle = between(2.62, 2.78);            // 150°~159°，向左侧下方
-    var dx = Math.cos(angle), dy = Math.sin(angle);
-    var startX = W * between(0.62, 1.12);
-    var startY = H * between(-0.12, 0.26);
-    var len = big ? between(520, 720) : between(260, 400);
-    var speed = big ? between(620, 820) : between(380, 540);
+  function rgba(c, a) {
+    if (a < 0) a = 0;
+    if (a > 1) a = 1;
+    return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a.toFixed(3) + ')';
+  }
+
+  /* 流星颜色：冷白蓝为主，偶有暖金火流星 */
+  function pickTint() {
+    if (rnd() > 0.84) return { tail: [255, 194, 136], mid: [255, 216, 172] };
+    return { tail: [168, 198, 255], mid: [214, 230, 255] };
+  }
+
+  function spawnMeteor(big, second) {
+    /* 角度分三档：陡落 / 常规 / 掠射，避免每次都是同一个方向 */
+    var roll = rnd();
+    var angle = roll < 0.3 ? between(1.82, 2.2)
+      : roll < 0.78 ? between(2.2, 2.62)
+        : between(2.62, 3.02);
+
+    var dy = Math.sin(angle);
+    var startX, startY;
+    if (angle < 2.2) {
+      /* 陡落：从顶部偏右进入，斜着扫过整屏 */
+      startX = W * between(0.35, 1.02);
+      startY = -H * between(0.03, 0.16);
+    } else if (angle < 2.62) {
+      /* 常规：从右上角一带进入 */
+      startX = W * between(0.5, 1.06);
+      startY = -H * between(0.02, 0.18);
+    } else {
+      /* 掠射：从右侧边缘横穿 */
+      startX = W * between(1.0, 1.12);
+      startY = H * between(-0.06, 0.72);
+    }
+
+    var len = big ? between(520, 780) : between(220, 470);
+    var speed = big ? between(620, 900) : between(390, 640);
 
     meteors.push({
-      x: startX, y: startY, dx: dx, dy: dy,
+      hx: startX, hy: startY,
+      angle: angle,
+      dx: Math.cos(angle), dy: dy,
+      curve: between(-0.075, 0.075),        // 轻微转向：轨迹不是死直线
       len: len,
       speed: speed,
-      width: big ? between(2.2, 3.0) : between(1.3, 1.9),
+      width: big ? between(2.2, 3.0) : between(1.35, 2.0),
+      alpha: second ? between(0.48, 0.7) : between(0.72, 1),
       dist: 0,
       big: big,
       split: rnd() > 0.25,
-      life: 0
+      tint: pickTint(),
+      entered: false,
+      delay: second ? between(0.18, 0.55) : 0
     });
   }
 
@@ -179,31 +215,50 @@
 
     for (var i = meteors.length - 1; i >= 0; i--) {
       var m = meteors[i];
+
+      /* 一组里的第二道稍晚出场，避免像同一帧闪了一下 */
+      if (m.delay > 0) { m.delay -= dt; continue; }
+
       m.dist += m.speed * dt;
-      m.life += dt;
+      m.angle += m.curve * dt;
+      if (m.angle < 1.78) m.angle = 1.78;
+      if (m.angle > 3.03) m.angle = 3.03;
+      m.dx = Math.cos(m.angle);
+      m.dy = Math.sin(m.angle);
+      m.hx += m.dx * m.speed * dt;
+      m.hy += m.dy * m.speed * dt;
 
-      var hx = m.x + m.dx * m.dist;
-      var hy = m.y + m.dy * m.dist;
+      var hx = m.hx, hy = m.hy;
 
-      if (hx < -m.len - 140 || hy > H + m.len) { meteors.splice(i, 1); continue; }
+      /* 头部离开画面后整道淡出，避免留下半截"划痕" */
+      if (!m.entered) {
+        if (hx > 0 && hx < W && hy > 0 && hy < H) m.entered = true;
+      }
+      var edge = 1;
+      if (m.entered) {
+        var off = Math.max(hx < 0 ? -hx : 0, hy > H ? hy - H : 0, hx > W ? hx - W : 0);
+        edge = 1 - Math.min(1, off / 240);
+        if (edge <= 0.002) { meteors.splice(i, 1); continue; }
+      }
 
-      var fade = m.dist < 90 ? m.dist / 90 : 1;           // 出场淡入
-      var grow = Math.min(1, m.dist / 170);                // 尾迹由短长到全长
+      var fade = (m.dist < 90 ? m.dist / 90 : 1) * m.alpha * edge;   // 出场淡入 + 出画淡出
+      var grow = Math.min(1, m.dist / 170);                    // 尾迹由短长到全长
       var len = m.len * grow;
       var nx = -m.dy, ny = m.dx;
       var w = m.width * (0.55 + 0.45 * grow);
       var tx = hx - m.dx * len;
       var ty = hy - m.dy * len;
+      var tc = m.tint.tail, mc = m.tint.mid;
 
       ctx.save();
       ctx.globalCompositeOperation = 'lighter';
 
       /* 主体：锥形尾，头部宽、尾端收成一点 */
       var g = ctx.createLinearGradient(tx, ty, hx, hy);
-      g.addColorStop(0, 'rgba(150,185,255,0)');
-      g.addColorStop(0.35, 'rgba(168,198,255,' + (0.10 * fade).toFixed(3) + ')');
-      g.addColorStop(0.75, 'rgba(214,230,255,' + (0.34 * fade).toFixed(3) + ')');
-      g.addColorStop(1, 'rgba(255,255,255,' + (0.72 * fade).toFixed(3) + ')');
+      g.addColorStop(0, rgba(tc, 0));
+      g.addColorStop(0.35, rgba(tc, 0.10 * fade));
+      g.addColorStop(0.75, rgba(mc, 0.34 * fade));
+      g.addColorStop(1, rgba([255, 255, 255], 0.72 * fade));
       ctx.fillStyle = g;
       ctx.beginPath();
       ctx.moveTo(hx + nx * w, hy + ny * w);
@@ -214,9 +269,9 @@
 
       /* 亮芯：一条更细更实的线，让尾迹有骨 */
       var gc = ctx.createLinearGradient(tx, ty, hx, hy);
-      gc.addColorStop(0, 'rgba(200,220,255,0)');
-      gc.addColorStop(0.6, 'rgba(225,238,255,' + (0.32 * fade).toFixed(3) + ')');
-      gc.addColorStop(1, 'rgba(255,255,255,' + (0.95 * fade).toFixed(3) + ')');
+      gc.addColorStop(0, rgba([200, 220, 255], 0));
+      gc.addColorStop(0.6, rgba([225, 238, 255], 0.32 * fade));
+      gc.addColorStop(1, rgba([255, 255, 255], 0.95 * fade));
       ctx.strokeStyle = gc;
       ctx.lineWidth = Math.max(0.8, w * 0.42);
       ctx.lineCap = 'round';
@@ -232,8 +287,8 @@
         var sx = hx + nx * off, sy = hy + ny * off;
         var stx = sx - m.dx * sl, sty = sy - m.dy * sl;
         var g2 = ctx.createLinearGradient(stx, sty, sx, sy);
-        g2.addColorStop(0, 'rgba(160,190,255,0)');
-        g2.addColorStop(1, 'rgba(220,235,255,' + (0.5 * fade).toFixed(3) + ')');
+        g2.addColorStop(0, rgba(tc, 0));
+        g2.addColorStop(1, rgba(mc, 0.5 * fade));
         ctx.strokeStyle = g2;
         ctx.lineWidth = Math.max(0.7, w * 0.3);
         ctx.beginPath();
@@ -244,10 +299,10 @@
 
       /* 头部光晕 */
       var head = ctx.createRadialGradient(hx, hy, 0, hx, hy, w * 11);
-      head.addColorStop(0, 'rgba(255,255,255,' + fade.toFixed(3) + ')');
-      head.addColorStop(0.18, 'rgba(232,242,255,' + (0.6 * fade).toFixed(3) + ')');
-      head.addColorStop(0.45, 'rgba(180,205,255,' + (0.16 * fade).toFixed(3) + ')');
-      head.addColorStop(1, 'rgba(160,190,255,0)');
+      head.addColorStop(0, rgba([255, 255, 255], fade));
+      head.addColorStop(0.18, rgba([234, 243, 255], 0.6 * fade));
+      head.addColorStop(0.45, rgba(tc, 0.16 * fade));
+      head.addColorStop(1, rgba(tc, 0));
       ctx.fillStyle = head;
       ctx.beginPath();
       ctx.arc(hx, hy, w * 11, 0, Math.PI * 2);
@@ -257,12 +312,15 @@
     }
   }
 
+  var lastDrawTime = null;
+
   function draw(t) {
+    var dt = lastDrawTime === null ? 0 : Math.min(Math.max(t - lastDrawTime, 0), 0.1);
+    lastDrawTime = t;
     ctx.clearRect(0, 0, W, H);
     drawSkyBase();
     drawStars(t);
-    drawMeteors((t - (draw._prev || t)) || 0);
-    draw._prev = t;
+    drawMeteors(dt);
   }
 
   function resize() {
@@ -273,8 +331,8 @@
     canvas.height = Math.round(H * DPR);
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     buildStars();
-    draw._prev = 0;
-    draw(0);
+    lastDrawTime = null;
+    draw(clock);
   }
 
   function loop(now) {
@@ -288,8 +346,9 @@
 
     if (now > nextMeteorAt) {
       meteorCount++;
-      spawnMeteor(meteorCount % 4 === 0);
-      nextMeteorAt = now + between(8000, 18000);
+      spawnMeteor(meteorCount % 4 === 0, false);
+      if (rnd() < 0.5) spawnMeteor(false, true);   // 约一半的组是两道
+      nextMeteorAt = now + between(1800, 2800);
     }
 
     draw(clock);
@@ -298,7 +357,7 @@
   function start() {
     if (reduceMotion) { draw(0); return; }
     lastFrame = 0;
-    nextMeteorAt = performance.now() + between(2600, 5200);
+    nextMeteorAt = performance.now() + between(700, 1600);
     if (rafId === null) rafId = requestAnimationFrame(loop);
   }
 
