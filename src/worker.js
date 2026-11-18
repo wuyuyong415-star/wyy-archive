@@ -75,18 +75,26 @@ async function hashIp(request, salt) {
     .join('');
 }
 
-function tokenOk(request, env, url) {
+function tokenState(request, env, url) {
   const expected = env.ADMIN_TOKEN;
-  if (!expected) return false;
+  // 未配置口令：管理接口整体不可用，给出可区分的错误码，便于排查
+  if (!expected) return 'missing';
   const given =
     request.headers.get('x-admin-token') || url.searchParams.get('token') || '';
-  if (given.length !== expected.length) return false;
+  if (!given) return 'none';
+  if (given.length !== expected.length) return 'wrong';
   let diff = 0;
   for (let i = 0; i < expected.length; i++) {
     diff |= given.charCodeAt(i) ^ expected.charCodeAt(i);
   }
-  return diff === 0;
+  return diff === 0 ? 'ok' : 'wrong';
 }
+
+const AUTH_ERRORS = {
+  missing: [{ error: '服务端未配置管理口令（ADMIN_TOKEN）' }, 503],
+  none: [{ error: '缺少口令' }, 401],
+  wrong: [{ error: '口令不对' }, 403],
+};
 
 const publicRow = (r) => ({
   id: r.id,
@@ -155,7 +163,8 @@ async function handlePost(request, env) {
 }
 
 async function handleAdminList(request, env, url) {
-  if (!tokenOk(request, env, url)) return json({ error: '口令不对' }, 403);
+  const st = tokenState(request, env, url);
+  if (st !== 'ok') return json(...AUTH_ERRORS[st]);
   const { results } = await env.DB.prepare(
     `SELECT id, post, name, body, created_at, hidden FROM comments
       ORDER BY id DESC LIMIT 500`
@@ -170,7 +179,8 @@ async function handleAdminList(request, env, url) {
 }
 
 async function handleAdminHide(request, env, url) {
-  if (!tokenOk(request, env, url)) return json({ error: '口令不对' }, 403);
+  const st = tokenState(request, env, url);
+  if (st !== 'ok') return json(...AUTH_ERRORS[st]);
   let payload;
   try {
     payload = await request.json();
