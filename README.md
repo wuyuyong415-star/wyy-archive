@@ -38,6 +38,7 @@ src/
   worker.js         评论接口（/api/*），其余请求交还静态资源
 public/
   assets/           样式与脚本，原样拷贝进 dist
+  assets/sky.js     夜空背景：星野、银河带、偶发流星（Canvas 本地绘制，无外部资源）
   assets/uploads/   后台上传的图片
 build.mjs           构建脚本：md + site.json → dist/
 wrangler.jsonc      Cloudflare 部署配置（name 决定网址前缀，D1 绑定在这里）
